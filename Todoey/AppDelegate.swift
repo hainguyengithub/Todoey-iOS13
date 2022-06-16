@@ -16,6 +16,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+      let searchPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+      if let last = searchPath.last {
+        let result = last as String
+        print(result)
+      }
         return true
     }
 

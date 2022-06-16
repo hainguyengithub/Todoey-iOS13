@@ -16,9 +16,13 @@ class TodoListViewController: UITableViewController {
     "Destroy Demogorgon"
   ]
 
+  let userDefaults = UserDefaults.standard
+
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view.
+    if let items = self.userDefaults.array(forKey: "TodoListArray") as? [String] {
+      self.itemArray = items
+    }
   }
 
   //MARK - Table view data source
@@ -44,5 +48,30 @@ class TodoListViewController: UITableViewController {
 
     self.tableView.deselectRow(at: indexPath, animated: true)
   }
+
+  //MARK - add new item
+
+  @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+    let alert = UIAlertController(title: "Add new Item", message: "", preferredStyle: .alert)
+    alert.addTextField { alertTextField in
+      alertTextField.placeholder = "A todo item"
+    }
+    let addAction = UIAlertAction(title: "Add", style: .default) { action in
+      if let textfield = alert.textFields?[0] {
+        if let value = textfield.text {
+          self.itemArray.append(value)
+          self.userDefaults.set(self.itemArray, forKey: "TodoListArray")
+          DispatchQueue.main.async {
+            self.tableView.reloadData()
+          }
+        }
+      }
+
+      // self.itemArray.append()
+    }
+    alert.addAction(addAction)
+    self.present(alert, animated: true, completion: nil)
+  }
+  
 
 }
