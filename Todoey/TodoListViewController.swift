@@ -17,13 +17,17 @@ class TodoListViewController: UITableViewController {
     Item(title: "Save the world"),
   ]
 
-  let userDefaults = UserDefaults.standard
+  let dataFilePath = FileManager
+    .default
+    .urls(for: .documentDirectory, in: .userDomainMask)
+    .first?
+    .appendingPathComponent("Items.plist")
+
+  // let userDefaults = UserDefaults.standard
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    if let items = self.userDefaults.array(forKey: "TodoListArray") as? [Item] {
-      self.itemArray = items
-    }
+    self.loadData()
   }
 
   //MARK - Table view data source
@@ -43,9 +47,8 @@ class TodoListViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     itemArray[indexPath.row].isDone = !itemArray[indexPath.row].isDone
-
-    self.tableView.reloadData()
-
+    self.saveData()
+    self.reloadData()
     self.tableView.deselectRow(at: indexPath, animated: true)
   }
 
@@ -61,10 +64,8 @@ class TodoListViewController: UITableViewController {
         if let value = textfield.text {
           let newItem = Item(title: value)
           self.itemArray.append(newItem)
-          self.userDefaults.set(self.itemArray, forKey: "TodoListArray")
-          DispatchQueue.main.async {
-            self.tableView.reloadData()
-          }
+          self.saveData()
+          self.reloadData()
         }
       }
 
@@ -73,6 +74,32 @@ class TodoListViewController: UITableViewController {
     alert.addAction(addAction)
     self.present(alert, animated: true, completion: nil)
   }
-  
+
+  func saveData() {
+    let encoder = PropertyListEncoder()
+    do {
+      let data = try encoder.encode(self.itemArray)
+      try data.write(to: self.dataFilePath!)
+    } catch {
+      print("Error encoding the data \(error)")
+    }
+  }
+
+  func loadData() {
+    let decoder = PropertyListDecoder()
+    do {
+      let data = try Data(contentsOf: dataFilePath!)
+      let items = try decoder.decode([Item].self, from: data)
+      self.itemArray = items
+    } catch {
+      print("Error encoding the data \(error)")
+    }
+  }
+
+  func reloadData() {
+    DispatchQueue.main.async {
+      self.tableView.reloadData()
+    }
+  }
 
 }
