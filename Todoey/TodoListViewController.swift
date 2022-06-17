@@ -10,17 +10,18 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-  var itemArray = [
-    "Find Mike",
-    "Buy Eggos",
-    "Destroy Demogorgon"
+  var itemArray: [Item] = [
+    Item(title: "Find Mike"),
+    Item(title: "Buy Eggos"),
+    Item(title: "Destroy Demogorgon"),
+    Item(title: "Save the world"),
   ]
 
   let userDefaults = UserDefaults.standard
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    if let items = self.userDefaults.array(forKey: "TodoListArray") as? [String] {
+    if let items = self.userDefaults.array(forKey: "TodoListArray") as? [Item] {
       self.itemArray = items
     }
   }
@@ -33,18 +34,17 @@ class TodoListViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = self.tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath)
-    cell.textLabel?.text = self.itemArray[indexPath.row]
+    cell.accessoryType = (itemArray[indexPath.row].isDone) ? .checkmark : .none
+    cell.textLabel?.text = self.itemArray[indexPath.row].title
     return cell
   }
 
   //MARK - table view delegate
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    if (self.tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark) {
-      self.tableView.cellForRow(at: indexPath)?.accessoryType = .none
-    } else {
-      self.tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-    }
+    itemArray[indexPath.row].isDone = !itemArray[indexPath.row].isDone
+
+    self.tableView.reloadData()
 
     self.tableView.deselectRow(at: indexPath, animated: true)
   }
@@ -59,7 +59,8 @@ class TodoListViewController: UITableViewController {
     let addAction = UIAlertAction(title: "Add", style: .default) { action in
       if let textfield = alert.textFields?[0] {
         if let value = textfield.text {
-          self.itemArray.append(value)
+          let newItem = Item(title: value)
+          self.itemArray.append(newItem)
           self.userDefaults.set(self.itemArray, forKey: "TodoListArray")
           DispatchQueue.main.async {
             self.tableView.reloadData()
