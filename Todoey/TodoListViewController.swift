@@ -10,12 +10,7 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-  var itemArray: [Item] = [
-    Item(title: "Find Mike"),
-    Item(title: "Buy Eggos"),
-    Item(title: "Destroy Demogorgon"),
-    Item(title: "Save the world"),
-  ]
+  var itemArray: [Item] = []
 
   let dataFilePath = FileManager
     .default
@@ -23,11 +18,18 @@ class TodoListViewController: UITableViewController {
     .first?
     .appendingPathComponent("Items.plist")
 
-  // let userDefaults = UserDefaults.standard
+  let context = (UIApplication.shared.delegate as! AppDelegate)
+    .persistentContainer
+    .viewContext
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    self.loadData()
+    var item = Item(context: self.context)
+    item.title = "placeholder"
+    item.isDone = true
+    self.itemArray.append(item)
+    print(self.tableView!)
+    // self.loadData()
   }
 
   //MARK - Table view data source
@@ -62,7 +64,9 @@ class TodoListViewController: UITableViewController {
     let addAction = UIAlertAction(title: "Add", style: .default) { action in
       if let textfield = alert.textFields?[0] {
         if let value = textfield.text {
-          let newItem = Item(title: value)
+          let newItem = Item(context: self.context)
+          newItem.title = value
+          newItem.isDone = false
           self.itemArray.append(newItem)
           self.saveData()
           self.reloadData()
@@ -76,25 +80,20 @@ class TodoListViewController: UITableViewController {
   }
 
   func saveData() {
-    let encoder = PropertyListEncoder()
     do {
-      let data = try encoder.encode(self.itemArray)
-      try data.write(to: self.dataFilePath!)
+      try context.save()
     } catch {
-      print("Error encoding the data \(error)")
+      print("Error saving the context \(error)")
     }
   }
 
-  func loadData() {
-    let decoder = PropertyListDecoder()
-    do {
-      let data = try Data(contentsOf: dataFilePath!)
-      let items = try decoder.decode([Item].self, from: data)
-      self.itemArray = items
-    } catch {
-      print("Error encoding the data \(error)")
-    }
-  }
+  // func loadData() {
+  //   do {
+  //
+  //   } catch {
+  //     print("Error encoding the data \(error)")
+  //   }
+  // }
 
   func reloadData() {
     DispatchQueue.main.async {
