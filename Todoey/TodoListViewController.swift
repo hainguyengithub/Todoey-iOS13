@@ -93,9 +93,8 @@ class TodoListViewController: UITableViewController {
     }
   }
 
-  func loadData() {
+  func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
     do {
-      let request: NSFetchRequest<Item> = Item.fetchRequest()
       try self.itemArray = self.context.fetch(request)
     } catch {
       print("Error encoding the data \(error)")
@@ -105,6 +104,30 @@ class TodoListViewController: UITableViewController {
   func reloadData() {
     DispatchQueue.main.async {
       self.tableView.reloadData()
+    }
+  }
+
+}
+
+extension TodoListViewController: UISearchBarDelegate {
+
+  func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    let request: NSFetchRequest<Item> = Item.fetchRequest()
+    request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+    request.sortDescriptors = [
+      NSSortDescriptor(key: "title", ascending: true)
+    ]
+    self.loadData(with: request)
+    self.reloadData()
+  }
+
+  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    if (searchBar.text?.count == 0) {
+      self.loadData()
+      DispatchQueue.main.async {
+        searchBar.resignFirstResponder()
+        self.reloadData()
+      }
     }
   }
 
