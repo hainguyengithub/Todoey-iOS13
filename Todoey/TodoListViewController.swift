@@ -13,6 +13,12 @@ class TodoListViewController: UITableViewController {
 
   var itemArray: [Item] = []
 
+  var selectedCategory: Category? {
+    didSet {
+      loadData()
+    }
+  }
+
   let dataFilePath = FileManager
     .default
     .urls(for: .documentDirectory, in: .userDomainMask)
@@ -29,7 +35,9 @@ class TodoListViewController: UITableViewController {
     // item.title = "placeholder"
     // item.isDone = true
     // self.itemArray.append(item)
-    self.loadData()
+
+    // Do not load items when category is not determined.
+    // self.loadData()
   }
 
   //MARK - Table view data source
@@ -73,6 +81,7 @@ class TodoListViewController: UITableViewController {
           let newItem = Item(context: self.context)
           newItem.title = value
           newItem.isDone = false
+          newItem.parentCategory = self.selectedCategory
           self.itemArray.append(newItem)
           self.saveData()
           self.reloadData()
@@ -93,7 +102,20 @@ class TodoListViewController: UITableViewController {
     }
   }
 
-  func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+  func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+    let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", self.selectedCategory!.name!)
+    var combinedPredicate: NSCompoundPredicate
+    if let additionalPredicate = predicate {
+      combinedPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+        categoryPredicate,
+        additionalPredicate,
+      ])
+    } else {
+      combinedPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+        categoryPredicate,
+      ])
+    }
+    request.predicate = combinedPredicate
     do {
       try self.itemArray = self.context.fetch(request)
     } catch {

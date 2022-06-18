@@ -9,16 +9,16 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Table View Controller-->
+        <!--Category-->
         <scene sceneID="v6d-aW-HJm">
             <objects>
-                <tableViewController id="uzD-0l-Flp" sceneMemberID="viewController">
+                <tableViewController id="uzD-0l-Flp" userLabel="Category" customClass="CategoryTableViewController" customModule="Todoey" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="dZ5-6y-AyN">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Afk-TD-qCN">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" id="Afk-TD-qCN">
                                 <rect key="frame" x="0.0" y="44.5" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Afk-TD-qCN" id="8Tt-6T-7I7">
@@ -32,7 +32,13 @@
                             <outlet property="delegate" destination="uzD-0l-Flp" id="VJd-Vl-QJh"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="wtf-ML-gZj"/>
+                    <navigationItem key="navigationItem" title="Categories" id="wtf-ML-gZj">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="b6b-Yk-nLN">
+                            <connections>
+                                <action selector="addButtonPressed:" destination="uzD-0l-Flp" id="W1u-qQ-DJv"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <segue destination="JFp-VD-qZ0" kind="show" identifier="showItems" id="Dhv-RV-3Pm"/>
                     </connections>

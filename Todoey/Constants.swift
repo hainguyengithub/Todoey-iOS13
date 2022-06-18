@@ -12,4 +12,6 @@ struct K {
 
   static let cellIdentifier: String = "TodoItemCell"
 
+  static let categoryCellIdentifier: String = "CategoryCell"
+
 }
