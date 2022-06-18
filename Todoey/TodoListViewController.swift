@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
 
@@ -24,12 +25,11 @@ class TodoListViewController: UITableViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    var item = Item(context: self.context)
-    item.title = "placeholder"
-    item.isDone = true
-    self.itemArray.append(item)
-    print(self.tableView!)
-    // self.loadData()
+    // var item = Item(context: self.context)
+    // item.title = "placeholder"
+    // item.isDone = true
+    // self.itemArray.append(item)
+    self.loadData()
   }
 
   //MARK - Table view data source
@@ -52,6 +52,12 @@ class TodoListViewController: UITableViewController {
     self.saveData()
     self.reloadData()
     self.tableView.deselectRow(at: indexPath, animated: true)
+    
+    // Delete example
+    // The order is important.
+    // self.context.delete(self.itemArray[indexPath.row])
+    // self.itemArray.remove(at: indexPath.row)
+    // self.saveData()
   }
 
   //MARK - add new item
@@ -87,13 +93,14 @@ class TodoListViewController: UITableViewController {
     }
   }
 
-  // func loadData() {
-  //   do {
-  //
-  //   } catch {
-  //     print("Error encoding the data \(error)")
-  //   }
-  // }
+  func loadData() {
+    do {
+      let request: NSFetchRequest<Item> = Item.fetchRequest()
+      try self.itemArray = self.context.fetch(request)
+    } catch {
+      print("Error encoding the data \(error)")
+    }
+  }
 
   func reloadData() {
     DispatchQueue.main.async {
